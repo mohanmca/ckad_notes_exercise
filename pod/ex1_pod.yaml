@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    costcenter: swamit
+    location: NA
+
+spec:
+  containers:
+    - name: ngnix-container
+      image: nginx
+    # - name: backend-container
+    #   image: redis
+
