@@ -1,6 +1,22 @@
-* https://kodekloud.com/p/practice-test-kubernetes-ckad-pods
-* https://kodekloud.com/p/practice-test-kubernetes-ckad-replicasets
-* https://kodekloud.com/p/practice-test-kubernetes-ckad-deployments
-* https://kodekloud.com/p/practice-test-kubernetes-cka-imperative-1
-* https://kodekloud.com/p/practice-test-kubernetes-ckad-namespaces
-* https://kodekloud.com/p/practice-test-kubernetes-ckad-commands-and-arguments
+# Exercises
+* [Pods](https://kodekloud.com/p/practice-test-kubernetes-ckad-pods)
+* [ReplicaSets](https://kodekloud.com/p/practice-test-kubernetes-ckad-replicasets)
+* [Deployments](https://kodekloud.com/p/practice-test-kubernetes-ckad-deployments)
+* [Namespaces](https://kodekloud.com/p/practice-test-kubernetes-ckad-namespaces)
+* [Commands and Arguments](https://kodekloud.com/p/practice-test-kubernetes-ckad-commands-and-arguments)
+* [ConfigMaps](https://kodekloud.com/p/practice-test-kubernetes-ckad-configmaps)
+* [Secrets](https://kodekloud.com/p/practice-test-kubernetes-ckad-secrets)
+* [Security Contexts](https://kodekloud.com/p/practice-test-kubernetes-ckad-security-contexts)
+* [Service Accounts](https://kodekloud.com/p/practice-test-kubernetes-ckad-service-account)
+* [Taints and Tolerations](https://kodekloud.com/p/practice-test-kubernetes-ckad-taints-tolerations)
+* [Node Affinity](https://kodekloud.com/p/practice-test-kubernetes-ckad-node-affinity)
+* [Multi-Container Pods](https://kodekloud.com/p/practice-test-kubernetes-ckad-multicontainer-pods)
+* [Readiness and Liveness Probes](https://kodekloud.com/p/practice-test-kubernetes-ckad-readiness-probes)
+* [Container Logging](https://kodekloud.com/p/practice-test-kubernetes-ckad-logging)
+* [Monitoring](https://kodekloud.com/p/practice-test-kubernetes-ckad-monitoring)
+* [Labels & Selectors](https://kodekloud.com/p/practice-test-kubernetes-ckad-labels-and-selectors)
+* [Rolling Updates And Rollbacks](https://kodekloud.com/p/practice-test-kubernetes-ckad-rolling-updates-and-rollbacks)
+* [Services](https://kodekloud.com/p/kubernetes-for-beginners-services-493847859)
+
+# Reference
+* [Kubernetes](https://wiki.quadratic.net/index.php/Kubernetes)
