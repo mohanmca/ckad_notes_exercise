@@ -91,6 +91,8 @@ ENTRYPOINT ['abracadbabra']
 docker run --entry-point abracadbabra curl -o http://google.com 
 ```
 
+## secutityContext
+
 ```bash
 kubectl get configmaps
 kubectl create configmap webapp-green --from-literal=color=green -o yaml
@@ -101,97 +103,123 @@ echo hello  | base64 --decode
 envFrom:
 - secretRef:
     name: secret-app-config
+```
 
+```yaml
+## for pod level security
+spec:
+  secutityContext:
+    runAsUser: 1000
+
+## for container level security
+spec:
+  containers:
+    secutityContext:
+      runAsUser: 1000
+
+# kubectl create secret generic db-secret --from-literal=DB_Host=sql01 --from-literal=DB_User=root --from-literal=DB_Password=password123
+
+
+```
+* Capabilities are configurable only at container level and not-at podlevel 
+
+
+## Service Accounts
+
+* A service account provides an identity for processes that run in a Pod.
+* Processes in containers inside pods can contact with  apiserver, they are authenticated as a particular Service Account.
+* Always there exists a default service-account named "default"
+* When ServiceAccount is created, it also creates a default token for serviceaccount
+* Every namespace has its own default service account
+* Token is stored as secret object
+* SA-TOken can be used for authorization/authenication
+* Service account can be assigned with additional permission using Role-Based-Access
+* If 3-rd party application that is requried Secret-ServiceAccount-Token is hosted within k8s cluster, Secret-Service-Account token itself could be mounted as a volume
+* Default token secret is mounted as a file (Using default-token-fdcs)
+  * /var/run/secrets/kubernetes.io/serviceaccount (directory)
+* Default ServiceAccount token only has read-only query permission
+
+```bash
+kubectl create serviceaccount dashboard-sa
+kubectl get serviceaccount
+kubect describe serviceaccount dashboard-sa
+## find secret token of the service_0_account
+kubectl describe secret dashboard-sa-kbbdm
+
+curl https://192.168.56.102:6443/api -insecure --header "Authenication: Bearer a3ViZWN0bCBkZXNjcmliZSBzZWNyZXQgZGFzaGJvYXJkLXNhLWtiYmRtCg=="
+## how to view the secret file from CLI
+kubectl exec -it my-pod ls /var/run/secrets/kubernetes.io/serviceaccount
+  * ca.crt, namespace, token (3 files)
+https://k8s.io/docs/search/?q=ServiceAccount
 ```
 
 
+## RBCA
+```yaml
+kind: RoleBinding 
+apiVersion: rbac. authorization. k8s. io/vl 
+metadata : 
+  name: read-pods 
+  namespace :  default 
+subjects: 
+ - kind: ServiceAccount 
+   name: dashboard-sa 
+   namespace : default
+roleRef : 
+  kind: Role 
+  name: pod-reader 
+  apiGroup: rbac. authorization. k8s. io 
+```
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRhc2hib2FyZC1zYS10b2tlbi02bXQ3aCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkYXNoYm9hcmQtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI3NmZhNWI2OS1iNmNmLTExZTktYmFiZS0wMjQyYWMxMTAwMTciLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkYXNoYm9hcmQtc2EifQ.Y1uOKpIxELDvzVDGbfFW9sCZk3KSDrbB8lTKDTn7RAK7X2hPVxtlQKIJ9yDzL5A0fUwlHmuUK9O2sqiQxLmCgWYxwFPohdYguvCtceAI1D6amm__i2zPa1o4DbTGoNJtTESp42wVzvZmuDcm2dR_SWJn7-CTOC-OXyba0NThx6zgdty972BBXk2MItSZs8mGzJwEWpebRqkbxxTa-ZJBwg1Cl50dIfM_Gyayk4LRNp2g6vvN08Pec1k6_SCVEu4VrbLpoblDFDUo_i9oV4XLq6K_zat449gOKS4Egm2XpgaAzOqVmXjHGYSEPOrIF9_RoliD6OkddNBJWdm8mu6MOA
 
 
 
+## Taints and tolerants
+* Taints are applied on NODES and Tolerants are applied on POD
+* Taints are like constraint, due to that many pods can't be scheduled on nodes that dosn't tolearte with taints
+* If pods has tolerant to certain taints, then they are added
+* Taint-effects
+  * NoSchedule
+  * NoExecute
+  * PrefereNoSchedule
+* If a pod with app:blue is executing on node-1, and if taint node node-1 as such app:blue:NoExecute, existing pod would be evicted from the node node-1
+* Nodes that has special hardware can be used for only specific purpose (GPU hw for ML)
 
-apiVersion: v1
-kind: Pod
-metadata:
-  creationTimestamp: 2019-08-03T22:59:40Z
-  labels:
-    name: webapp-color
-  name: webapp-color
-  namespace: default
-  resourceVersion: "5627"
-  selfLink: /api/v1/namespaces/default/pods/webapp-color
-  uid: 5fd5b6bb-b642-11e9-b30c-0242ac11002f
-spec:
-  containers:
-  - env:
-    - name: APP_COLOR
-      value: green
-    envFrom:
-    - configMapRef:
-        name: webapp-config-map
-    image: kodekloud/webapp-color
-    imagePullPolicy: Always
-    name: webapp-color
-    resources: {}
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: default-token-bzdjh
-      readOnly: true
-  dnsPolicy: ClusterFirst
-  nodeName: node01
-  priority: 0
-  restartPolicy: Always
-  schedulerName: default-scheduler
-  securityContext: {}
-  serviceAccount: default
-  serviceAccountName: default
-  terminationGracePeriodSeconds: 30
-  tolerations:
-  - effect: NoExecute
-    key: node.kubernetes.io/not-ready
-    operator: Exists
-    tolerationSeconds: 300
-  - effect: NoExecute
-    key: node.kubernetes.io/unreachable
-    operator: Exists
-    tolerationSeconds: 300
-  volumes:
-  - name: default-token-bzdjh
-    secret:
-      defaultMode: 420
-      secretName: default-token-bzdjh
-status:
-  conditions:
-  - lastProbeTime: null
-    lastTransitionTime: 2019-08-03T22:59:40Z
-    status: "True"
-    type: Initialized
-  - lastProbeTime: null
-    lastTransitionTime: 2019-08-03T22:59:42Z
-    status: "True"
-    type: Ready
-  - lastProbeTime: null
-    lastTransitionTime: null
-    status: "True"
-    type: ContainersReady
-  - lastProbeTime: null
-    lastTransitionTime: 2019-08-03T22:59:40Z
-    status: "True"
-    type: PodScheduled
-  containerStatuses:
-  - containerID: docker://c71cdd5693a5f80cb4bfafc790e91f465c6e3b643d57500c3085af47ed74111b
-    image: kodekloud/webapp-color:latest
-    imageID: docker-pullable://kodekloud/webapp-color@sha256:99c3821ea49b89c7a22d3eebab5c2e1ec651452e7675af243485034a72eb1423
-    lastState: {}
-    name: webapp-color
-    ready: true
-    restartCount: 0
-    state:
-      running:
-        startedAt: 2019-08-03T22:59:42Z
-  hostIP: 172.17.0.49
-  phase: Running
-  podIP: 10.32.0.2
-  qosClass: BestEffort
-  startTime: 2019-08-03T22:59:40Z
+
+```bash
+kubectl taint nodes node-name key=value:taint-effect
+kubectl tain node node-name app=blue:NoSchedule
+kubectl tain node node-name tier=fronend:NoSchedule
+kubectl tain node prod-node ctx=dev:NoSchedule
+```
+
+tolerations field should be same level as containers (not within containers)
+** Under pod definition
+tolerations:
+  - key: "app"
+    operator: "Equal"
+    value: "blue"
+    effect: "NoSchedule"
+
+tolerations:
+  - key: "tier"
+    operator: "Equals"
+    value: "frontend"
+    effect: "PreferNoSchedule"
+
+tolerations:
+  key: "key"
+  operator: "Exists"
+  effect: "NoSchedule"
+
+## Nodeselector
+* nodeselector should be at the same level as containers
+* kubectl label node node01 size=large #TO create label
+* kubectl label node node01 size- #To remove label
+
+nodeselector:
+  label_key: label_value
+
+## affinity > nodeAffinity
+* When pod should be configured for complex expression, nodeAffinity could be used
+* Operator can have one of the values like.. In, NotIn, Exists

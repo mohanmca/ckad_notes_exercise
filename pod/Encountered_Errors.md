@@ -18,3 +18,9 @@ Warning: kubectl apply should be used on resource created by either kubectl crea
 Error from server (Conflict): Operation cannot be fulfilled on replicasets.extensions "new-replica-set": the object has been modified; please apply your changes to the latest version and try again
 master $ kubectl replace -f new-rs.yml
 Error from server (Conflict): Operation cannot be fulfilled on re    
+
+
+master $ kubectl apply -f sc.yaml
+error: error validating "sc.yaml": error validating data: ValidationError(Pod.spec.securityContext): unknown field "capabilities" in io.k8s.api.core.v1.PodSecurityContext; if you choose to ignore these errors, turn validation off with --validate=false
+
+We should add capabilities under container, should not add under pod securityContext
