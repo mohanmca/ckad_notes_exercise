@@ -1,3 +1,8 @@
+## What is the base k8s pod yaml
+* https://github.com/kubernetes/website/blob/master/content/en/examples/pods/pod-nginx.yaml
+* https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/pods/pod-nginx.yaml
+* r.g.c/k/w/m/c/e/e/p/p (mcee)
+
 ## For exercise-1
 ```bash
   kubectl create -f ex1_pod.yaml
@@ -10,13 +15,14 @@
   kubectl get pods
 ```
 # Create nginx pod
+```bash
+  kubectl run nginx --image=nginx --generator=run-pod/v1
+  kubectl run nginx --image=nginx --generator=run-pod/v1 --dry-run -o yaml
+  kubectl get  pods  -o wide
+  kubectl describe pod newpod-12121
+  kubectl edit pod redis
 ```
-kubectl run nginx --image=nginx --generator=run-pod/v1
-kubectl run nginx --image=nginx --generator=run-pod/v1 --dry-run -o yaml
-kubectl get  pods  -o wide
-kubectl describe pod newpod-12121
-kubectl edit pod redis
-```
+
 # Replicaset
 ```bash
 kubectl get replicationcontroller
@@ -29,6 +35,7 @@ kubectl repalce -f mywebapp-replicaset.yml
 kubectl scale --replicas=6 -f mywebapp-replicaset.yml
 kubectl scale --replicas=6 replicaset mywebapp-replicaset
 ```
+
 # Kubectl commands
 ```bash
 #Create an NGINX Pod
@@ -216,6 +223,7 @@ tolerations:
 * nodeselector should be at the same level as containers
 * kubectl label node node01 size=large #TO create label
 * kubectl label node node01 size- #To remove label
+* kubectl label node master node-role.kubernetes.io/master=master
 
 nodeselector:
   label_key: label_value
@@ -223,3 +231,176 @@ nodeselector:
 ## affinity > nodeAffinity
 * When pod should be configured for complex expression, nodeAffinity could be used
 * Operator can have one of the values like.. In, NotIn, Exists
+
+## Multi-container pods
+
+* Created and destroyed the same time
+
+## Patterns
+
+* Sidecar
+  * Adding log agent along with container
+* Ambassador
+  * Connecting to different database for different environment
+* Adapter
+  * Adapt to common standard logging
+  * Convert the old logging format to new standard pattern
+
+## Realitime monitoring
+
+```bash
+kubectl get po,svc,rs,storageclasses,pv,pvc --watch
+```
+
+## Application readinessProbe && liveness
+
+* HTTPTest - /api/ready?
+* TCPTest - 3306
+* Exec Command - if script return 0 (successful execution)
+* readinessProbe:
+    initialDelaySounds: 10
+    perodSeconds: 5
+    failureThreshold: 8
+    httpGet:
+      path: /api/ready
+      port: 8080
+    tcpSocket:
+      port: 8180
+    exect:
+      command:
+        - cat
+        - /app/is_ready
+
+
+## liveness probe
+
+* docker run nginx
+* docker ps -a
+* kubectl run nginx --image=nginx
+
+for i in {1..20}; do
+  kubectl exec --nmaespace=kube-public curl -- sh -c 'test=`wget -q0- -T 2 http://webappurl:8080/ 2>&1` && echo "$test OK" || echo "Failed"';
+  echo ""
+done
+
+
+## Container logging
+
+* docker logs -f event-simulartor-container
+* docker logs -f event-simulator-container
+* kubectl logs -f event-simulator-pod webapp-container
+
+
+## How do you monitor?
+* Node level metrics
+  * cpu, network, memory, io
+* Metrics Server
+  * In-Memory metrics server without historical data
+  * For advanced, we have to use DataDog, ELK, Promethus
+* cAdvisor - Container Advisor
+  * Kubelet sub-component
+  * Node level metric
+
+* 
+```bash
+  minikube addons enable metrics-server
+  git clone https://github.com/kubernetes-incubator/metrics-server.git
+  kubectl create -f deploy/1.8+/ ## creating objects for all configuraion found on directory
+  kubectl top node
+  kubectl top pod
+```
+
+## Labels and Selectors
+
+* Labels can go under /metadata/labels/
+* kubectl internally uses labels (Example ReplicaSet)
+* 
+```bash
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-webapp
+  annotations:
+    buildVersion: 2.0
+  labels:
+    app: settlment
+    tier: front-end
+    type: backend-service
+```
+* labels defined under 
+  * ReplicaSets internally uses labels
+  * /spec/template/metadata/labels -- Are pod labels
+  * /spec/selector/matchLabels/app==settlement -- Are labels to select pods
+  * On creation of replicaset, if labels match, ReplicaSet is created successfully
+
+kubectl get pods --selector app=settlement
+kubectl get all --selector app=settlement --selector tier=frontend --selector env=prod
+
+
+## Annotations (for informatory tool)
+
+* Annotations are used to store additional metadata
+  * Phone
+  * Build-tool
+  * Build-tool-version
+
+## Updates and rollbacks (rollouts)
+* Every deployment is revisioned
+* Default Deployment would use "rollout" strategy  instead of recreate (recreate strategy is kill old, and then bring new)
+  * Rollout, kill one pod and cocurrently bring another pod.
+  * For n-pods, it does one at a time, at some-point, there will be equaly old and new pods
+* Deployment update comes from
+  * Image update
+  * Label update
+  * ReplicasCount update
+* New roll-out would trigger, new revision
+# We can undo the deployment made to fall-back to older version
+  * It would use older replicaSet for the rollback
+```bash
+kuectl create deployment deploy  
+kubectl create -f deployment-definition.yaml
+kubectl set image deployment/myapp-deployemnt ngnix:ngnix:1.15.8
+kubectl describe deployment myapp-deployment | grep StrategyType
+## Recreate /RollingUpdate, watchout for message under Events
+kubectl rollout status deployment/myapp-deployment
+kubectl rollout history deployment/myapp-deployment
+kubectl rollout undo deployment/myapp-deployment
+## Try below command (get replicasets) before and after rollback of deployment
+kubectl get replicasets
+kubectl run ngnix --image=ngnix:1.15.8
+## It creates deployment
+```
+
+## Cronjob
+
+* A job is similar to replicaset
+* A Job is used to set of pods to perform a given task to completion
+* A Job requires one ore more pods
+* Completions should be satisfied (pods sequentially created till it matchs completons count)
+* Parallelism: n -- could be used to spinoff multiple pods at a time
+
+
+* Example Job deployemnt
+
+```bash
+kubectl run nginx --image=busybox --exec -it -- expr 2+2
+kubectl run nginx --image=nginx:1.15.8 --exec -it -- expr 2+2
+kubectl create job --image=busybox math-add-job -- expr 3 + 2 --dry-run  -o yaml
+** command: ['expr','3','+','2']
+kubectl get job.batch/math-add-job -o yaml
+kubectl logs job.batch/math-add-job
+```
+
+* CronJob deployemnt
+* CronJob = Job + Schedule + Pod
+* apiVersion: batch/v1, kind: CronJob
+* Spec section should have 3 specs
+  * 1 for Job, 1 for Cron, 1 for Pod
+
+* spec: schedule: "*/1 * * * * *" 
+  * minute(99)/hour(99)/day_of_month(99)/month(99)/day_of_week(9)
+  * minute(0-59)/hour(0-23)/day_of_month(1-31)/month(1-12)/day_of_week(0-6)
+  * 0 - Sunday (somesystem treats 7 also sunday)
+```bash
+kubectl get cronjob
+```
