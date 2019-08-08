@@ -371,7 +371,7 @@ kubectl run ngnix --image=ngnix:1.15.8
 ## It creates deployment
 ```
 
-## Cronjob
+## Job
 
 * A job is similar to replicaset
 * A Job is used to set of pods to perform a given task to completion
@@ -391,7 +391,8 @@ kubectl get job.batch/math-add-job -o yaml
 kubectl logs job.batch/math-add-job
 ```
 
-* CronJob deployemnt
+# CronJob deployemnt
+
 * CronJob = Job + Schedule + Pod
 * apiVersion: batch/v1, kind: CronJob
 * Spec section should have 3 specs
