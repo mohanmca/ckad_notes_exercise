@@ -3,6 +3,13 @@
 * https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/pods/pod-nginx.yaml
 * r.g.c/k/w/m/c/e/e/p/p (mcee)
 
+## Minikube
+```bash
+winpty  minikube start ## if there is any console related issues
+minikube start -p testnode
+minukube ssh -p testnode
+```
+
 ## For exercise-1
 ```bash
   kubectl create -f ex1_pod.yaml
@@ -340,7 +347,6 @@ kubectl get all --selector app=settlement --selector tier=frontend --selector en
 ## Annotations (for informatory tool)
 
 * Annotations are used to store additional metadata
-  * Phone
   * Build-tool
   * Build-tool-version
 
@@ -359,7 +365,9 @@ kubectl get all --selector app=settlement --selector tier=frontend --selector en
 ```bash
 kuectl create deployment deploy  
 kubectl create -f deployment-definition.yaml
+# We can directly update image, but it would go out-of-sync with actual version
 kubectl set image deployment/myapp-deployemnt ngnix:ngnix:1.15.8
+kubectl set image deployment/frontend container-simple-webapp=kodekloud/webapp-color:v2
 kubectl describe deployment myapp-deployment | grep StrategyType
 ## Recreate /RollingUpdate, watchout for message under Events
 kubectl rollout status deployment/myapp-deployment
@@ -374,11 +382,13 @@ kubectl run ngnix --image=ngnix:1.15.8
 ## Job
 
 * A job is similar to replicaset
-* A Job is used to set of pods to perform a given task to completion
-* A Job requires one ore more pods
+* A Job requires one ore more pods to perform a given task to completion
 * Completions should be satisfied (pods sequentially created till it matchs completons count)
 * Parallelism: n -- could be used to spinoff multiple pods at a time
-
+* spec: backoffLimit= 5 
+```bash
+  kubectl create deployment throw-dice --image=kodekloud/thow-dice --dry-run -o yaml > job.yaml
+```
 
 * Example Job deployemnt
 
@@ -402,6 +412,248 @@ kubectl logs job.batch/math-add-job
   * minute(99)/hour(99)/day_of_month(99)/month(99)/day_of_week(9)
   * minute(0-59)/hour(0-23)/day_of_month(1-31)/month(1-12)/day_of_week(0-6)
   * 0 - Sunday (somesystem treats 7 also sunday)
+
 ```bash
-kubectl get cronjob
+  kubectl get cronjob
+```
+kubectl create job throw-dice --image=kodekloud/thow-dice --dry-run -o yaml
+
+# Services and networking
+* Services
+* Services - Cluster IP
+* Ingress Networking
+* Network Policies
+
+## Service
+* Three kinds of object, NodePart, ClusterIP, LoadBalancer, ExternalName
+* Service is like virtual-server inside the node (it has its own IP and port)
+* When more than one pods are there, Service acts as loadBalancer using Random algorithm distributes the load among multiple pods
+* Service might span across multiple nodes
+
+* NodePort sevice
+  * It opens a port in node, and forwards the request to port to port of the pod inside the node
+  * 3 ports are involved
+    * Port on the node != Port on the Service (cluster-ip) != Port on the Pod
+  * 30000 to 32767 (allowed range)
+
+
+* What is ClusterIP sevice
+  * Creating a virutal IP inside the cluster to enable communication between backend services and fronent services within cluster
+* LoadBalancer - can distribute within multiple-server or cloud-service-provider load-balancers
+
+*  Service yaml
+```yaml
+.spec.type=NodePort
+.spec.ports[].targetPort=80 ##optional, service port will be assumed by default
+.spec.ports[].port=80 ##only mandatory port
+.spec.ports[].nodePort=30080 ##optional, ranmdom port will be assigned
+
+##how to select pods for the service
+.spec.selector.app=myApp
+.spec.selector.tier=frontend
+```
+
+```bash
+kubectl get services
+```
+
+
+* CluserIP
+
+* Pod IP is not reliable to communicate between services
+* Each Service (backend, cache) with multiple pods can get a logical name and IP address, it is called ClusterIP
+* Service can be accessed using ClusterIP service name or ClusterIP IP-Address
+*  Service yaml
+```yaml
+.spec.metadata.name=cacheService #default
+.spec.type=CluserIP #default
+.spec.ports[].targetPort=80 ##optional, service port will be assumed by default
+.spec.ports[].port=80 ##only mandatory port
+.spec.ports[].nodePort=30080 ##optional, ranmdom port will be assigned
+
+##how to select pods for the service
+.spec.selector.app=myApp
+.spec.selector.tier=frontend
+```
+
+# Services vs Ingress
+-
+
+* When web-service running in higher port (30000), but user don't need to remember the IP, we need reverse-proxy, that would listen on 80, but forward to higher port backend
+* On public cloud, reverse proxy role is taken care by the load-balancers like GCP-load-balancer or ELB-load-balancer
+* if service can be accessible using https://myecommerce/dress-wear and if we already provisioned GCP-lb-1, we may need acquire GCP-lb-2 for new set of services like https://myecommerce/iot-watch. We have to keep redirecting using one more level of gcp-lb-n, that would increase the cost
+  * Instead we can use ingress, that would redirect the service based on URL path of the request to different services
+* We should also terminate TLS inside the cluster to increase the performance
+* When multiple such a URL path needs to configured different services, configuration itself becomes cumbersome
+* Ingress object can manage all such a configuration
+* Ingress can be thought as layer-7 load-balancer built-in k8s.
+* Ingress should be exposed outside world either as nodeport or elb, gcp-lb
+* Ingress === Ingress Controller (Deployment of reverse-proxy ) + Ingress Resources (Pods, Rules)
+* GCP-LB + nginx-ingress-controller  are managed part of Kubernetes project
+* [nginx-ingress-controller is famous](quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.0)
+
+
+# Ngnix-ingress-controller configuration
+* Ingress can have many minor cofiguration like
+  * error-log-path
+  * keep-alive
+  * ssl-protocols
+* Those configurations can be managed in ConfigMap, It can even be empty at the inital stage
+* Ingress controller requires two environment variable
+  * POD_NAME
+  * POD_NAMEPSPACE
+* Ingress controller should be exposed as a Service of type NodePort
+* Ingress controller has additional intelligence to monitor the Kubernetes cluster for ingress resources, it can configure the nginx server accourdingly,  but it requires special service account
+  * For ngnix-ingress-serviceaccount
+  * It require correct roles with role-bindings
+    * Roles, ClusterRoles, RoleBindings
+
+## Ingress Resource
+* There could be multiple Rules for each hostname
+* One rule could cover multiple hostname, but within that there could be multipath, each could cover different URL path
+
+```yaml
+apiVersion: extensions/v1beta1
+.kind: Ingress
+.spec.backend.serviceName: ingress-dress-service
+.spec.backend.servicePort: 80
+.spec.rules[].http[].paths.path[]=/wear
+.spec.rules[].http[].paths.path[].{backend.serviceName,servicePort}=wearService,80
+.spec.rules[].http[].paths.path[]=/watch
+.spec.rules[].http[].paths.path[].{backend.serviceName,servicePort}=watchService,80
+.spec.rules[].http[].paths.path[]=/gtd
+default-http-backend:80
+```
+
+```bash
+kubectl get ingress
+kubectl get ingress ingress-dress-service
+```
+
+## Ingress summary
+* Ingress Controller
+* Ingress-controller specfic service account, service, deployment, ConfigMap, ngnix-ingress-contoller
+* Ingress resource
+  * Ingress Rules, Ingress backend
+
+---
+## Network Policies (Firewall)
+* It is a kubernetes object that represents firewall policy for set of pods
+* Egress is outgoing traffic from backend pod to other service insdie/outside the cluser
+* Kubernetes by default "All allow" policy within the cluster for any two pods within cluster
+* Labels and Selectors are used to link the network-policy with the pods
+* apiVersion: networking.k8s.io/v1
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: planespotter
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ```
+
+```yaml
+#https://github.com/pandom/kubernetes/blob/78f6240fc9a890ed48e15e7f2560f656675260b2/sample-apps/planespotter/yamls/harbor/7-np-dfw.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: planespotter-ing-to-fe
+  namespace: planespotter
+spec:
+  podSelector:
+    matchLabels:
+      app: planespotter-frontend
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - ipBlock:
+          cidr: 100.64.208.5/32
+      ports:
+      - protocol: TCP
+        port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: planespotter-fe-to-app
+  namespace: planespotter
+spec:
+  podSelector:
+    matchLabels:
+      app: planespotter-app
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: planespotter-frontend
+      ports:
+      - protocol: TCP
+        port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: planespotter-app-to-redis
+  namespace: planespotter
+spec:
+  podSelector:
+    matchLabels:
+      app: redis-server
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: planespotter-app
+      ports:
+      - protocol: TCP
+        port: 6379
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: planespotter-adsb-to-redis
+  namespace: planespotter
+spec:
+  podSelector:
+    matchLabels:
+      app: redis-server
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: adsb-sync
+      ports:
+      - protocol: TCP
+        port: 6379
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mysql
+  namespace: planespotter
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql
+  policyTypes:
+  - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: planespotter-app
+      ports:
+      - protocol: TCP
+        port: 3306
 ```

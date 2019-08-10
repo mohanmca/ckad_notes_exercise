@@ -24,3 +24,6 @@ master $ kubectl apply -f sc.yaml
 error: error validating "sc.yaml": error validating data: ValidationError(Pod.spec.securityContext): unknown field "capabilities" in io.k8s.api.core.v1.PodSecurityContext; if you choose to ignore these errors, turn validation off with --validate=false
 
 We should add capabilities under container, should not add under pod securityContext
+
+$ kubectl create -f job.yaml
+The Job "throw-dice-job" is invalid: spec.template.spec.restartPolicy: Unsupported value: "Always": supported values: "OnFailure", "Never"
