@@ -6,3 +6,4 @@
 * docker kill $(docker ps -aq);docker rm $(docker ps -aq);
 * docker-machine.exe ssh default
 * curl http://10.0.2.15:8080/
+* touch test
