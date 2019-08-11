@@ -1,0 +1,1 @@
+/mnt/d/Apps/VSCode/Code.exe .
