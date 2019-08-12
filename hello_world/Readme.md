@@ -6,4 +6,10 @@
 * docker kill $(docker ps -aq);docker rm $(docker ps -aq);
 * docker-machine.exe ssh default
 * curl http://10.0.2.15:8080/
-* touch test
+
+## Docker pus
+* docker ps -aq
+* docker commit aa846297de5b mohan-nodem-hello
+* docker tag mohan-nodem-hello mohanmca/kubeimages:0.01
+* docker login
+* docker push mohanmca/kubeimages:0.01

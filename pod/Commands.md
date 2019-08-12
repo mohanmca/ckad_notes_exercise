@@ -2,6 +2,7 @@
 * https://github.com/kubernetes/website/blob/master/content/en/examples/pods/pod-nginx.yaml
 * https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/pods/pod-nginx.yaml
 * r.g.c/k/w/m/c/e/e/p/p (mcee)
+* https://hub.docker.com/u/kodekloud
 
 ## Minikube
 ```bash
@@ -21,6 +22,17 @@ minukube ssh -p testnode
   kubectl create -f ex2_pod.yaml
   kubectl get pods
 ```
+##Find IP Address of the pod
+```bash
+  kubectl get pod mmca --template={{.status.podIP}}
+```
+
+## Find NODE Ip details
+```bash
+kubectl get node minikube --template {{.status}} -o yaml
+
+```
+
 # Create nginx pod
 ```bash
   kubectl run nginx --image=nginx --generator=run-pod/v1
@@ -79,7 +91,7 @@ kubectl create service nodeport nginx --tcp=80:80 --node-port=30080 --dry-run -o
 ```
 
 ## Namespace commands
-# What is the default namespace? 
+# What is the default namespace?
 * It is *default*
 ```bash
 kubectl get pods --namespace=dev
@@ -102,7 +114,7 @@ CMD ['sleep 5'] # FAILURE, WOULD FAIL
 ENTRYPOINT ['sleep'] # Rest of the arguments could come from command-line
 CMD ["5"] #Default argument for Entry point
 ENTRYPOINT ['abracadbabra']
-docker run --entry-point abracadbabra curl -o http://google.com 
+docker run --entry-point abracadbabra curl -o http://google.com
 ```
 
 ## secutityContext
@@ -135,7 +147,7 @@ spec:
 
 
 ```
-* Capabilities are configurable only at container level and not-at podlevel 
+* Capabilities are configurable only at container level and not-at podlevel
 
 
 ## Service Accounts
@@ -170,19 +182,19 @@ https://k8s.io/docs/search/?q=ServiceAccount
 
 ## RBCA
 ```yaml
-kind: RoleBinding 
-apiVersion: rbac. authorization. k8s. io/vl 
-metadata : 
-  name: read-pods 
-  namespace :  default 
-subjects: 
- - kind: ServiceAccount 
-   name: dashboard-sa 
+kind: RoleBinding
+apiVersion: rbac. authorization. k8s. io/vl
+metadata :
+  name: read-pods
+  namespace :  default
+subjects:
+ - kind: ServiceAccount
+   name: dashboard-sa
    namespace : default
-roleRef : 
-  kind: Role 
-  name: pod-reader 
-  apiGroup: rbac. authorization. k8s. io 
+roleRef :
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac. authorization. k8s. io
 ```
 token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRhc2hib2FyZC1zYS10b2tlbi02bXQ3aCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkYXNoYm9hcmQtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI3NmZhNWI2OS1iNmNmLTExZTktYmFiZS0wMjQyYWMxMTAwMTciLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkYXNoYm9hcmQtc2EifQ.Y1uOKpIxELDvzVDGbfFW9sCZk3KSDrbB8lTKDTn7RAK7X2hPVxtlQKIJ9yDzL5A0fUwlHmuUK9O2sqiQxLmCgWYxwFPohdYguvCtceAI1D6amm__i2zPa1o4DbTGoNJtTESp42wVzvZmuDcm2dR_SWJn7-CTOC-OXyba0NThx6zgdty972BBXk2MItSZs8mGzJwEWpebRqkbxxTa-ZJBwg1Cl50dIfM_Gyayk4LRNp2g6vvN08Pec1k6_SCVEu4VrbLpoblDFDUo_i9oV4XLq6K_zat449gOKS4Egm2XpgaAzOqVmXjHGYSEPOrIF9_RoliD6OkddNBJWdm8mu6MOA
 
@@ -308,7 +320,7 @@ done
   * Kubelet sub-component
   * Node level metric
 
-* 
+*
 ```bash
   minikube addons enable metrics-server
   git clone https://github.com/kubernetes-incubator/metrics-server.git
@@ -321,7 +333,7 @@ done
 
 * Labels can go under /metadata/labels/
 * kubectl internally uses labels (Example ReplicaSet)
-* 
+*
 ```bash
 apiVersion: v1
 kind: Pod
@@ -334,7 +346,7 @@ metadata:
     tier: front-end
     type: backend-service
 ```
-* labels defined under 
+* labels defined under
   * ReplicaSets internally uses labels
   * /spec/template/metadata/labels -- Are pod labels
   * /spec/selector/matchLabels/app==settlement -- Are labels to select pods
@@ -363,7 +375,7 @@ kubectl get all --selector app=settlement --selector tier=frontend --selector en
 # We can undo the deployment made to fall-back to older version
   * It would use older replicaSet for the rollback
 ```bash
-kuectl create deployment deploy  
+kuectl create deployment deploy
 kubectl create -f deployment-definition.yaml
 # We can directly update image, but it would go out-of-sync with actual version
 kubectl set image deployment/myapp-deployemnt ngnix:ngnix:1.15.8
@@ -385,7 +397,7 @@ kubectl run ngnix --image=ngnix:1.15.8
 * A Job requires one ore more pods to perform a given task to completion
 * Completions should be satisfied (pods sequentially created till it matchs completons count)
 * Parallelism: n -- could be used to spinoff multiple pods at a time
-* spec: backoffLimit= 5 
+* spec: backoffLimit= 5
 ```bash
   kubectl create deployment throw-dice --image=kodekloud/thow-dice --dry-run -o yaml > job.yaml
 ```
@@ -408,7 +420,7 @@ kubectl logs job.batch/math-add-job
 * Spec section should have 3 specs
   * 1 for Job, 1 for Cron, 1 for Pod
 
-* spec: schedule: "*/1 * * * * *" 
+* spec: schedule: "*/1 * * * * *"
   * minute(99)/hour(99)/day_of_month(99)/month(99)/day_of_week(9)
   * minute(0-59)/hour(0-23)/day_of_month(1-31)/month(1-12)/day_of_week(0-6)
   * 0 - Sunday (somesystem treats 7 also sunday)
@@ -511,7 +523,7 @@ kubectl get services
 ## Ingress Resource
 * There could be multiple Rules for each hostname
 * One rule could cover multiple hostname, but within that there could be multipath, each could cover different URL path
-
+* kind:Ingress - host configuratuon is not mandatory
 ```yaml
 apiVersion: extensions/v1beta1
 .kind: Ingress
@@ -543,6 +555,10 @@ kubectl get ingress ingress-dress-service
 * Kubernetes by default "All allow" policy within the cluster for any two pods within cluster
 * Labels and Selectors are used to link the network-policy with the pods
 * apiVersion: networking.k8s.io/v1
+
+```bash
+kubectl get networkpolicy --all-namespaces
+```
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -657,3 +673,152 @@ spec:
       - protocol: TCP
         port: 3306
 ```
+
+## Network testing
+
+
+curl -L http://172.17.0.4:8080/
+curl -L http://172.17.0.1:8080/
+curl -L http://10.0.2.15:8080/
+curl -L http://192.168.99.100:8080/
+curl -L http://127.0.0.1:8080/
+curl -L http://mmca:8080/
+docker exec  -it aa5d915015b6 bash
+
+```
+kubectl create deployment mmca --image=mohanmca/kubeimages:0.01
+kubectl expose deployment/mmca --type=NodePort --port=8080 --name=node-hello-service
+kubectl get svc
+```
+
+```bash
+  kubectl get deployments --all-namespaces
+  critical-space   webapp-pay
+  kubectl create ingress criticalp-pay-ingress-space --servicename critical-space --service-port 8080
+```
+critical-ingress.yaml
+
+kubectl create -f critical-ingress.yaml -n critical-space
+kubectl get role,rolesbindings -n ingress-space
+
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+pay-service   ClusterIP   10.111.54.159   <none>        8282/TCP   15m
+
+kubectl create service ingress --tcp=80:80 --node-port=30080 
+kubectl expose deployment -n ingress-space ingress-controller --type=NodePort --port=80 --name=ingress --dry-run -o yaml
+kubectl expose deployment -n ingress-space hello-world --type=LoadBalancer
+kubectl expose deployment  -n ingress-space ingress-controller --port=80  --name=ingress --type=NodePort --labels=app=v1 --dry-run -o yaml 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress
+  namespace: ingress-space
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    nodePort: 30080
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  selector:
+    name: nginx-ingressmaste
+
+## Volume vs Persistent-Volume
+
+* Data destroyed along with containers and pods
+* Data processed by container should remain, hence we need volume
+* Create a volume using storage on the directory of the host
+
+```yaml
+# In POD, VNHPT
+volumes:
+  - name: data-volume
+    hostPath:
+      path: /data
+      type: Directory
+```
+
+## How to mount the volume
+
+```yaml
+volumeMounts:
+  - mountPath: /opt
+    name: data-volume
+```
+
+# What are all external replicated cluster storage solution
+* NFS
+* GlusterNFS
+* GLocker
+* ScaleIO
+* CEPH-FS
+* AWS-EBS
+* Google-Persistent-Disk
+* AWS
+
+```yaml
+# In POD, VNHPT
+volumes:
+  - name: data-volume
+    awsElasticBlockStore:
+      volumeID: <volume-id>
+      fsType: ext4
+```
+
+## Persistent-Volume
+* We can't manage configuring volum for each pod when we have 1000s of POD, can't managed them part of POD configuration
+* It is easier to get the exsiting volumne to be hooked, and managed centrally
+* Persistent Volume
+  * Cluster-wide pool of storaged configured volume
+  * Persistent-Volume is centrally managed by Administrator 
+* Users can select storage from pool of volume, It is called Persistent-Volume-Claim
+
+```yaml
+# pv-definition.yaml
+spec:
+  accessMode:
+    - ReadWriteOne
+  capactity:
+    storage: 1Gi
+  hostPath:
+    path: /tmp/data
+  awElasticBlockStore:
+    volumeID: <volume-ID>
+    fsType: ext4
+```
+
+## Persistent-Volume-Claim
+* Persistent-Volume-Claim is created by user to use Persistent-Volume
+* PVC is bound to PV, It would start with Pending status till it is bound to PV
+* What are all the matching-criteria?
+  * Access-Mode
+  * Storage-Class
+  * Sufficient-Capacity
+  * Volume Modes
+  * Labels Selectors
+* When PVC is returned, by-default 
+  persistentVolumeReclaimPolicy: Delete
+  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: Recycle
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim  
+metaData:
+  name: mypvc-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+``` 
+
+kubectl get persistentvolumecliam myclaim
+kubectl get persistentvolumecliam myclaim
