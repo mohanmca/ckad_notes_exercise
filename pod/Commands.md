@@ -1,8 +1,24 @@
 ## What is the base k8s pod yaml
 * https://github.com/kubernetes/website/blob/master/content/en/examples/pods/pod-nginx.yaml
 * https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/pods/pod-nginx.yaml
+* https://hub.docker.com/r/cloudnatived/demo/tags
 * r.g.c/k/w/m/c/e/e/p/p (mcee)
 * https://hub.docker.com/u/kodekloud
+
+
+## Base setup
+```bash ##git-bash
+* kubectl run demo-hello --image=cloudnatived/demo:hello --generator=run-pod/v1 --port=8888
+kubectl run busybox --image=busybox --generator=run-pod/v1
+# note down IP from below command
+kubectl get pod demo-hello -o wide
+```
+
+```cmd
+## below didn't work from cygwin and git-bash, but works from cmd
+kubectl exec -it busybox -- /bin/sh
+wget http://172.17.0.5:8888/ ()
+```
 
 ## Minikube
 ```bash
@@ -743,6 +759,9 @@ volumes:
       path: /data
       type: Directory
 ```
+
+Volume HostPath: /var/log/webapp
+Volume Mount: /log
 
 ## How to mount the volume
 
