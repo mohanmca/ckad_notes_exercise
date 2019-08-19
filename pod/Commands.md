@@ -14,10 +14,16 @@ kubectl run busybox --image=busybox --generator=run-pod/v1
 kubectl get pod demo-hello -o wide
 ```
 
-```cmd
+```bat
 ## below didn't work from cygwin and git-bash, but works from cmd
 kubectl exec -it busybox -- /bin/sh
 wget http://172.17.0.5:8888/ ()
+```
+
+## Alias
+```bash
+alias bb='kubectl run busybox --image=busybox:1.28 --rm -it --restart=Never --command -- '
+bb 6000
 ```
 
 ## Minikube
@@ -840,4 +846,11 @@ spec:
 ``` 
 
 kubectl get persistentvolumecliam myclaim
-kubectl get persistentvolumecliam myclaim
+
+
+## Exam preparation
+```bash
+kubectl explain job.spec --recursive
+kubectl run ngnix --image=ngnix --restart=Never --namespace=myns --port=80 --command --serviceaccount=mysa --env=HOSTNAME=local --labels=bu=finance,env=dev --requests='cpu=100m,memory=256Mi' --limits='cpu=100m,memory=512Mi' --dry-run -o yaml -- /bin/sh -c 'echo hello world'
+kubectl set sa deploy deployname myuser
+```

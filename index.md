@@ -18,6 +18,10 @@
 * [Rolling Updates And Rollbacks](https://kodekloud.com/p/practice-test-kubernetes-ckad-rolling-updates-and-rollbacks)
 * [Services](https://kodekloud.com/p/kubernetes-for-beginners-services-493847859)
 
+## Mock exams
+* [Mock Exam1](https://kodekloud.com/p/test-practice-test/?scenario=kubernetes-ckad-exam-1)
+* [Mock Exam2](https://kodekloud.com/p/test-practice-test/?scenario=kubernetes-ckad-exam-2)
+
 ## Other exam referenes
 * (https://www.linkedin.com/pulse/my-ckad-exam-experience-atharva-chauthaiwale/)
 * (https://medium.com/@harioverhere/ckad-certified-kubernetes-application-developer-my-journey-3afb0901014)
@@ -25,4 +29,5 @@
 
 # Reference
 * [Kubernetes](https://wiki.quadratic.net/index.php/Kubernetes)
+
 
