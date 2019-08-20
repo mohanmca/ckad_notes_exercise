@@ -25,6 +25,13 @@ wget http://172.17.0.5:8888/ ()
 alias bb='kubectl run busybox --image=busybox:1.28 --rm -it --restart=Never --command -- '
 bb 6000
 ```
+## Pull commands from https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands
+```html
+* open chrome for url https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands
+let kubectl_nodes = Array.from( document.getElementsByTagName("code")).filter(f => f.className == 'lang-shell')
+let kube_commands = kubectl_nodes.filter(f => f.innerHTML.startsWith("kubectl")).map(f => f.innerText).join("\n")
+```
+
 
 ## Minikube
 ```bash
