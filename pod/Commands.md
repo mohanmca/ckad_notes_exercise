@@ -1,4 +1,5 @@
 ## What is the base k8s pod yaml
+* https://github.com/kubernetes/website/blob/master/content/en/examples/pods/simple-pod.yaml
 * https://github.com/kubernetes/website/blob/master/content/en/examples/pods/pod-nginx.yaml
 * https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/pods/pod-nginx.yaml
 * https://hub.docker.com/r/cloudnatived/demo/tags
@@ -6,9 +7,25 @@
 * https://hub.docker.com/u/kodekloud
 
 
+## Minikube
+```bash
+winpty  minikube start ## if there is any console related issues
+minikube start --vm-driver=xhyve --container-runtime=docker --show-libmachine-logs --v=10 --alsologtostderr --cpus 4 --memory 8192
+minikube start -p testnode
+minikube ssh -p testnode
+minikube addons enable metrics-server
+minikube dashboard
+minikube delete
+```
+
+## Find NODE Ip details
+```bash
+kubectl get node minikube --template {{.status}} -o yaml
+```
+
 ## Base setup
 ```bash ##git-bash
-* kubectl run demo-hello --image=cloudnatived/demo:hello --generator=run-pod/v1 --port=8888
+kubectl run demo-hello --image=cloudnatived/demo:hello --generator=run-pod/v1 --port=8888
 kubectl run busybox --image=busybox --generator=run-pod/v1
 # note down IP from below command
 kubectl get pod demo-hello -o wide
@@ -24,14 +41,6 @@ wget http://172.17.0.5:8888/ ()
 ```bash
 alias bb='kubectl run busybox --image=busybox:1.28 --rm -it --restart=Never --command -- '
 bb 6000
-```
-
-
-## Minikube
-```bash
-winpty  minikube start ## if there is any console related issues
-minikube start -p testnode
-minukube ssh -p testnode
 ```
 
 ## For exercise-1
@@ -50,11 +59,6 @@ minukube ssh -p testnode
   kubectl get pod mmca --template={{.status.podIP}}
 ```
 
-## Find NODE Ip details
-```bash
-kubectl get node minikube --template {{.status}} -o yaml
-
-```
 
 # Create nginx pod
 ```bash
@@ -345,7 +349,6 @@ done
 
 *
 ```bash
-  minikube addons enable metrics-server
   git clone https://github.com/kubernetes-incubator/metrics-server.git
   kubectl create -f deploy/1.8+/ ## creating objects for all configuraion found on directory
   kubectl top node
@@ -356,7 +359,7 @@ done
 
 * Labels can go under /metadata/labels/
 * kubectl internally uses labels (Example ReplicaSet)
-*
+
 ```bash
 apiVersion: v1
 kind: Pod
@@ -375,9 +378,10 @@ metadata:
   * /spec/selector/matchLabels/app==settlement -- Are labels to select pods
   * On creation of replicaset, if labels match, ReplicaSet is created successfully
 
+```bash
 kubectl get pods --selector app=settlement
 kubectl get all --selector app=settlement --selector tier=frontend --selector env=prod
-
+```
 
 ## Annotations (for informatory tool)
 
@@ -513,7 +517,6 @@ kubectl get services
 
 # Services vs Ingress
 -
-
 * When web-service running in higher port (30000), but user don't need to remember the IP, we need reverse-proxy, that would listen on 80, but forward to higher port backend
 * On public cloud, reverse proxy role is taken care by the load-balancers like GCP-load-balancer or ELB-load-balancer
 * if service can be accessible using https://myecommerce/dress-wear and if we already provisioned GCP-lb-1, we may need acquire GCP-lb-2 for new set of services like https://myecommerce/iot-watch. We have to keep redirecting using one more level of gcp-lb-n, that would increase the cost
@@ -699,7 +702,7 @@ spec:
 
 ## Network testing
 
-
+```bash
 curl -L http://172.17.0.4:8080/
 curl -L http://172.17.0.1:8080/
 curl -L http://10.0.2.15:8080/
@@ -707,8 +710,9 @@ curl -L http://192.168.99.100:8080/
 curl -L http://127.0.0.1:8080/
 curl -L http://mmca:8080/
 docker exec  -it aa5d915015b6 bash
-
 ```
+
+```bash
 kubectl create deployment mmca --image=mohanmca/kubeimages:0.01
 kubectl expose deployment/mmca --type=NodePort --port=8080 --name=node-hello-service
 kubectl get svc
@@ -719,19 +723,27 @@ kubectl get svc
   critical-space   webapp-pay
   kubectl create ingress criticalp-pay-ingress-space --servicename critical-space --service-port 8080
 ```
+
 critical-ingress.yaml
 
+```bash
 kubectl create -f critical-ingress.yaml -n critical-space
 kubectl get role,rolesbindings -n ingress-space
+```
 
+```pre
 NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
 pay-service   ClusterIP   10.111.54.159   <none>        8282/TCP   15m
+```
 
+```bash
 kubectl create service ingress --tcp=80:80 --node-port=30080 
 kubectl expose deployment -n ingress-space ingress-controller --type=NodePort --port=80 --name=ingress --dry-run -o yaml
 kubectl expose deployment -n ingress-space hello-world --type=LoadBalancer
 kubectl expose deployment  -n ingress-space ingress-controller --port=80  --name=ingress --type=NodePort --labels=app=v1 --dry-run -o yaml 
+```bash
 
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -751,6 +763,7 @@ spec:
     name: https
   selector:
     name: nginx-ingressmaste
+```
 
 ## Volume vs Persistent-Volume
 
@@ -767,8 +780,8 @@ volumes:
       type: Directory
 ```
 
-Volume HostPath: /var/log/webapp
-Volume Mount: /log
+* Volume HostPath: /var/log/webapp
+* Volume Mount: /log
 
 ## How to mount the volume
 
@@ -846,8 +859,9 @@ spec:
       storage: 500Mi
 ``` 
 
+```bash
 kubectl get persistentvolumecliam myclaim
-
+```
 
 ## Exam preparation
 ```bash
