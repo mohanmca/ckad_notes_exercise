@@ -599,7 +599,7 @@ spec:
   ```
 
 ```yaml
-#https://github.com/pandom/kubernetes/blob/78f6240fc9a890ed48e15e7f2560f656675260b2/sample-apps/planespotter/yamls/harbor/7-np-dfw.yaml
+#https://github.com/pandom/kubernetes/blob/master/sample-apps/planespotter/yamls/harbor/7-np-dfw.yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
