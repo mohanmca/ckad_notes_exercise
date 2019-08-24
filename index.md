@@ -18,6 +18,10 @@
 * [Rolling Updates And Rollbacks](https://kodekloud.com/p/practice-test-kubernetes-ckad-rolling-updates-and-rollbacks)
 * [Services](https://kodekloud.com/p/kubernetes-for-beginners-services-493847859)
 
+
+## Wordpress Challenge
+* https://kodekloud.com/p/practice-test-kubernetes-challenge-1-wordpress
+
 ## Mock exams
 * [Mock Exam1](https://kodekloud.com/p/test-practice-test/?scenario=kubernetes-ckad-exam-1)
 * [Mock Exam2](https://kodekloud.com/p/test-practice-test/?scenario=kubernetes-ckad-exam-2)

@@ -7,6 +7,10 @@
 * https://hub.docker.com/u/kodekloud
 
 
+## NFS Mount yamls
+* https://github.com/kubernetes/examples/blob/master/staging/volumes/nfs/nfs-pv.yaml
+
+
 ## Minikube
 ```bash
 winpty  minikube start ## if there is any console related issues
@@ -599,7 +603,7 @@ spec:
   ```
 
 ```yaml
-#https://github.com/pandom/kubernetes/blob/master/sample-apps/planespotter/yamls/harbor/7-np-dfw.yaml
+# https://github.com/pandom/kubernetes/blob/master/sample-apps/planespotter/yamls/harbor/7-np-dfw.yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
