@@ -41,3 +41,5 @@ docker tag mohan-nodem-hello mohanmca/kubeimages:0.01
 docker login
 docker push mohanmca/kubeimages:0.01
 ```
+## Reference
+* [Ngnix image](https://github.com/dockerfile/nginx/blob/master/Dockerfile)
