@@ -6,6 +6,6 @@ FROM node:12.8.0-buster
 
 EXPOSE 8080
 
-COPY server.js .
+COPY Server.js .
 
-CMD node server.js
+CMD node Server.js
