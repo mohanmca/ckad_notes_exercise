@@ -1,0 +1,36 @@
+kubectl run nginx --restart=Never --image=nginx -l tier=web
+kubectl expose pod nginx --port=30088 --target-port=80 --name=nginx-https --type=NodePort
+alias bb='kubectl run busybox --image=busybox --restart=Never --rm -it --'
+
+## Validate that above works
+
+### Send request to pod from busybox
+```bash
+# Note down ip
+k get pods -o wide
+export IP=`k get pod nginx -o  template  --template={{.status.podIP}}`
+bb wget -O- http://172.17.0.6/
+```
+
+### Send request to cluser-ip from busybox
+```bash
+export CLUSTER_IP=`k get svc nginx-https --template {{.spec.clusterIP}}`
+bb wget -O- http://$CLUSTER_IP:30088/
+bb wget -O- http://10.107.227.183:30088/
+```
+
+### Send request to NodePort from busybox
+```bash
+export NODEIP=`k get node minikube -o json | jq '.status.addresses[0].address' | tr -d "\""`
+export NODE_PORT=`k get svc nginx-https -o json | jq '.spec.ports[0].nodePort'`
+
+bb wget -O- http://$NODEIP:$NODE_PORT
+bb wget -O- http://10.0.2.15:$NODE_PORT
+```
+
+`k get node minikube --template {{.status.addresses[0].address}}
+  status:
+    addresses:
+    - address: 10.0.2.15
+      type: InternalIP
+    - address: minikube
