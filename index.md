@@ -33,5 +33,3 @@
 
 # Reference
 * [Kubernetes](https://wiki.quadratic.net/index.php/Kubernetes)
-
-

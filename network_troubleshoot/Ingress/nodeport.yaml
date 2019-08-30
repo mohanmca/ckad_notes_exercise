@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    tier: web
+  name: nginx-https
+spec:
+  clusterIP: 10.107.227.183
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 32558
+    port: 30088
+    protocol: TCP
+    targetPort: 80
+  selector:
+    tier: web
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+

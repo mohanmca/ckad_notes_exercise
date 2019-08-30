@@ -521,7 +521,8 @@ kubectl get services
 
 # Services vs Ingress
 -
-* When web-service running in higher port (30000), but user don't need to remember the IP, we need reverse-proxy, that would listen on 80, but forward to higher port backend
+
+* When web-service running in higher port (30000), but user don't need to remember the IP, we need reverse-proxy, that listens on 80, but forward to higher port backend
 * On public cloud, reverse proxy role is taken care by the load-balancers like GCP-load-balancer or ELB-load-balancer
 * if service can be accessible using https://myecommerce/dress-wear and if we already provisioned GCP-lb-1, we may need acquire GCP-lb-2 for new set of services like https://myecommerce/iot-watch. We have to keep redirecting using one more level of gcp-lb-n, that would increase the cost
   * Instead we can use ingress, that would redirect the service based on URL path of the request to different services
@@ -536,6 +537,7 @@ kubectl get services
 
 
 # Ngnix-ingress-controller configuration
+
 * Ingress can have many minor cofiguration like
   * error-log-path
   * keep-alive
@@ -551,9 +553,11 @@ kubectl get services
     * Roles, ClusterRoles, RoleBindings
 
 ## Ingress Resource
+
 * There could be multiple Rules for each hostname
 * One rule could cover multiple hostname, but within that there could be multipath, each could cover different URL path
 * kind:Ingress - host configuratuon is not mandatory
+
 ```yaml
 apiVersion: extensions/v1beta1
 .kind: Ingress
@@ -573,6 +577,7 @@ kubectl get ingress ingress-dress-service
 ```
 
 ## Ingress summary
+
 * Ingress Controller
 * Ingress-controller specfic service account, service, deployment, ConfigMap, ngnix-ingress-contoller
 * Ingress resource
