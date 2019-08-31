@@ -1,7 +1,7 @@
 # Exam checklist prepared based on past blogs
 
 ## Before exam
-- [] [Familiarise K8S documentation](https://kubernetes.io/docs/home/)
+- [x] [Familiarise K8S documentation](https://kubernetes.io/docs/home/)
 - [] [Bookmark Important API](https://kubernetes.io/docs/home/)
   -  [Kubectl](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
   -  [Kubectl Cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
@@ -10,7 +10,7 @@
 - [] Decide Yaml convention per question
 - [] [Practice exam](https://matthewpalmer.net/kubernetes-app-developer/articles/ckad-practice-exam.html)
 - [] (learn and familiarize tmux)
-
+- [*] [Practice vi shortcut-keys]
 
 ## Technical checklist
 - [] Alyways assume you have to jump between the cluster - "kubectl config set-context..."
