@@ -52,3 +52,5 @@ printSubSubCommands create secret
 
 main
 
+## ./kube_commands_help.sh > kube_help.txt
+## grep -A 1 "# " kube_help.txt > kube_extracted_from_cli.txt

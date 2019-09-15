@@ -20,6 +20,7 @@ minikube ssh -p testnode
 minikube addons enable metrics-server
 minikube dashboard
 minikube delete
+minikube addons enable ingress
 ```
 
 ## Find NODE Ip details

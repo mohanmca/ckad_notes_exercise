@@ -47,3 +47,12 @@ Container 2: type: moon
 
 
 Create a PersistentVolume called custom-volume with size: 50MiB reclaim policy:retain, Access Modes: ReadWriteMany and hostPath: /opt/data    
+
+## Recently struggled
+
+Create a new Ingress Resource for the service: my-video-service to be made available at the URL: http://ckad-mock-exam-solution.com:30093/video.
+
+
+Create an ingress resource with host: ckad-mock-exam-solution.com
+path:/video
+Once set up, curl test of the URL from the nodes should be successful / HTTP 200
