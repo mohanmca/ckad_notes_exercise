@@ -56,3 +56,4 @@ Create a new Ingress Resource for the service: my-video-service to be made avail
 Create an ingress resource with host: ckad-mock-exam-solution.com
 path:/video
 Once set up, curl test of the URL from the nodes should be successful / HTTP 200
+

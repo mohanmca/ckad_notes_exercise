@@ -22,6 +22,10 @@
   - [] Shift+Insert to paste
 - [] While deleting, use "--grace-period=1  " to save time
 
+## Most useful commands
+- wget url to save the file or curl -L url > file.name
+- sed -i 's/old-text/new-text/g' input.txt
+
 ## During exam
 * Set alias for k with kubectl
 * Set alias for bb with busybox
@@ -29,6 +33,19 @@
 * echo "set number" > ~/.vimrc or  vim -c 'set number'
 
 ## Non Technical checklist
+
+## After exam
+* What is maxSurge and maxUnavailability 10%
+* When namespace doesn't appear, did you swtich context
+* If ingress rules are already available, how to enforce pod to communicate with other pod within pod configuration
+* Configure fluentd using shared volume and transform the file
+* Loading configMap as volume should be just easy
+* llccnf images
+* namespaces are like KDPNS00101
+  * kubect config use-context k8s
+  * kubect config use-context dk8s
+  * kubect config use-context nk8s
+  * kubect config use-context sk8s
 
 
 
