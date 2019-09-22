@@ -23,6 +23,14 @@ minikube delete
 minikube addons enable ingress
 ```
 
+## Minikube (if hyper-v disabled)
+```
+>> CMD (As adming and fire following)
+bcdedit /set hypervisorlaunchtype off 
+https://github.com/kubernetes/minikube/issues/4587
+minikube start --kubernetes-version='v1.16.0' --no-vtx-check
+```
+
 ## Find NODE Ip details
 ```bash
 kubectl get node minikube --template {{.status}} -o yaml
