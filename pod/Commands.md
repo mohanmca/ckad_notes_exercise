@@ -21,6 +21,7 @@ minikube addons enable metrics-server
 minikube dashboard
 minikube delete
 minikube addons enable ingress
+minikube start --memory='8000mb' --disk-size='20000mb'  --kubernetes-version='v1.16.0'
 ```
 
 ## Minikube (if hyper-v disabled)
