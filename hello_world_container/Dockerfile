@@ -1,7 +1,7 @@
 # If we need slim-and-secure
-# FROM node:12.8.0-alpine
+# FROM node:20.17.0-alpine
 
-FROM node:12.8.0-buster
+FROM node:20.17.0
 
 
 EXPOSE 8080
